@@ -1,0 +1,16 @@
+# Managed by Ansible
+server {
+    listen 80;
+    listen [::]:80;
+
+    server_name {{ nginx_cis_server_names | join(' ') }};
+
+    root /var/www/html;
+    index index.html index.nginx-debian.html;
+
+    include /etc/nginx/snippets/cis-deny-hidden.conf;
+
+    location / {
+        try_files $uri $uri/ =404;
+    }
+}

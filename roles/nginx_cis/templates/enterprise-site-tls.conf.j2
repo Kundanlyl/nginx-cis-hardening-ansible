@@ -1,0 +1,38 @@
+# Managed by Ansible
+# CIS 4.1.1 — Redirect approved HTTP traffic to HTTPS
+
+server {
+    listen 80;
+    listen [::]:80;
+
+    server_name {{ nginx_cis_server_names | join(' ') }};
+
+    return 301 https://$host$request_uri;
+}
+
+# CIS 4.1.3, 4.1.4, 4.1.5 and 4.1.8
+server {
+    listen 443 ssl;
+    listen [::]:443 ssl;
+
+    server_name {{ nginx_cis_server_names | join(' ') }};
+
+    root /var/www/html;
+    index index.html index.nginx-debian.html;
+
+    ssl_certificate {{ nginx_cis_tls_certificate }};
+    ssl_certificate_key {{ nginx_cis_tls_private_key }};
+
+    ssl_protocols TLSv1.3;
+    ssl_prefer_server_ciphers off;
+
+    add_header Strict-Transport-Security
+        "max-age={{ nginx_cis_hsts_max_age }}; includeSubDomains"
+        always;
+
+    include /etc/nginx/snippets/cis-deny-hidden.conf;
+
+    location / {
+        try_files $uri $uri/ =404;
+    }
+}

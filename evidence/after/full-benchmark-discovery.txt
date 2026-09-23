@@ -1,0 +1,130 @@
+nginx | CHANGED | rc=0 >>
+===== HOST AND DATE =====
+web01-group1
+2026-07-29T16:43:28-04:00
+===== OPERATING SYSTEM =====
+Ubuntu 26.04 LTS
+VERSION_CODENAME=resolute
+===== NGINX VERSION AND BUILD =====
+nginx version: nginx/1.28.3 (Ubuntu)
+nginx version: nginx/1.28.3 (Ubuntu)
+built with OpenSSL 3.5.5 27 Jan 2026
+TLS SNI support enabled
+configure arguments: --with-cc-opt='-g -O2 -Werror=implicit-function-declaration -fno-omit-frame-pointer -mno-omit-leaf-frame-pointer -ffile-prefix-map=/build/nginx-yOrFdS/nginx-1.28.3=. -flto=auto -ffat-lto-objects -fstack-protector-strong -fstack-clash-protection -Wformat -Werror=format-security -fcf-protection -march=x86-64-v3 -fdebug-prefix-map=/build/nginx-yOrFdS/nginx-1.28.3=/usr/src/nginx-1.28.3-2ubuntu1.8 -fPIC -Wdate-time -D_FORTIFY_SOURCE=3' --with-ld-opt='-Wl,-Bsymbolic-functions -Wl,--package-metadata=%7B%22type%22:%22deb%22%2C%22os%22:%22ubuntu%22%2C%22name%22:%22nginx%22%2C%22version%22:%221.28.3-2ubuntu1.8%22%2C%22architecture%22:%22amd64%22%2C%22architectureVariant%22:%22amd64v3%22%7D -flto=auto -ffat-lto-objects -Wl,-z,relro -Wl,-z,now -march=x86-64-v3 -fPIC' --override-system=Linux --override-release=3.16.0 --override-machine=x86_64 --prefix=/usr/share/nginx --conf-path=/etc/nginx/nginx.conf --http-log-path=/var/log/nginx/access.log --error-log-path=stderr --lock-path=/var/lock/nginx.lock --pid-path=/run/nginx.pid --modules-path=/usr/lib/nginx/modules --http-client-body-temp-path=/var/lib/nginx/body --http-fastcgi-temp-path=/var/lib/nginx/fastcgi --http-proxy-temp-path=/var/lib/nginx/proxy --http-scgi-temp-path=/var/lib/nginx/scgi --http-uwsgi-temp-path=/var/lib/nginx/uwsgi --with-compat --with-debug --with-pcre-jit --with-http_ssl_module --with-http_stub_status_module --with-http_realip_module --with-http_auth_request_module --with-http_v2_module --with-http_v3_module --with-http_dav_module --with-http_slice_module --with-threads --build=Ubuntu --with-http_addition_module --with-http_flv_module --with-http_gunzip_module --with-http_gzip_static_module --with-http_mp4_module --with-http_random_index_module --with-http_secure_link_module --with-http_sub_module --with-mail_ssl_module --with-stream_ssl_module --with-stream_ssl_preread_module --with-stream_realip_module --with-http_geoip_module=dynamic --with-http_image_filter_module=dynamic --with-http_perl_module=dynamic --with-http_xslt_module=dynamic --with-mail=dynamic --with-stream=dynamic --with-stream_geoip_module=dynamic
+===== PACKAGE SOURCES =====
+nginx:
+  Installed: 1.28.3-2ubuntu1.8
+  Candidate: 1.28.3-2ubuntu1.8
+  Version table:
+ *** 1.28.3-2ubuntu1.8 500
+        500 http://ca-central-1.ec2.archive.ubuntu.com/ubuntu resolute-updates/main amd64v3 Packages
+        500 http://security.ubuntu.com/ubuntu resolute-security/main amd64v3 Packages
+        100 /var/lib/dpkg/status
+     1.28.3-2ubuntu1 500
+        500 http://ca-central-1.ec2.archive.ubuntu.com/ubuntu resolute/main amd64v3 Packages
+===== SERVICE ACCOUNT =====
+user www-data;
+uid=33(www-data) gid=33(www-data) groups=33(www-data)
+www-data:x:33:33:www-data:/var/www:/usr/sbin/nologin
+www-data L 2026-06-04 0 99999 7 -1
+User www-data is not allowed to run sudo on web01-group1.
+===== ACTIVE SECURITY DIRECTIVES =====
+pid /run/nginx.pid;
+error_log /var/log/nginx/error.log info;
+        server_tokens off;
+	ssl_protocols TLSv1.2 TLSv1.3; # Dropping SSLv3 (POODLE), TLS 1.0, 1.1
+	ssl_prefer_server_ciphers off; # Don't force server cipher order.
+	access_log /var/log/nginx/access.log;
+log_format cis_json escape=json
+access_log /var/log/nginx/access.json cis_json;
+client_header_timeout 15s;
+client_body_timeout 15s;
+send_timeout 15s;
+limit_req_zone $binary_remote_addr
+    listen 80 default_server;
+    listen [::]:80 default_server;
+    listen 80;
+    listen [::]:80;
+    listen 443 ssl;
+    listen [::]:443 ssl;
+    ssl_protocols TLSv1.3;
+    ssl_prefer_server_ciphers off;
+    add_header Strict-Transport-Security
+            deny all;
+            deny all;
+        limit_req zone=cis_login_limit
+add_header X-Content-Type-Options "nosniff" always;
+add_header Content-Security-Policy
+add_header Referrer-Policy
+    allow all;
+    deny all;
+    access_log off;
+===== LISTENING PORTS =====
+tcp   LISTEN 0      511             0.0.0.0:443       0.0.0.0:*    users:(("nginx",pid=686,fd=8),("nginx",pid=685,fd=8),("nginx",pid=682,fd=8))
+tcp   LISTEN 0      511             0.0.0.0:80        0.0.0.0:*    users:(("nginx",pid=686,fd=6),("nginx",pid=685,fd=6),("nginx",pid=682,fd=6))
+tcp   LISTEN 0      511                [::]:443          [::]:*    users:(("nginx",pid=686,fd=9),("nginx",pid=685,fd=9),("nginx",pid=682,fd=9))
+tcp   LISTEN 0      511                [::]:80           [::]:*    users:(("nginx",pid=686,fd=7),("nginx",pid=685,fd=7),("nginx",pid=682,fd=7))
+===== PID FILE =====
+/run/nginx.pid root:root 644
+===== CONFIGURATION DIRECTORIES =====
+750 root:root /etc/nginx
+750 root:root /etc/nginx/sites-available
+750 root:root /etc/nginx/ssl
+750 root:root /etc/nginx/conf.d
+750 root:root /etc/nginx/modules-available
+750 root:root /etc/nginx/snippets
+750 root:root /etc/nginx/modules-enabled
+750 root:root /etc/nginx/sites-enabled
+===== CONFIGURATION FILES =====
+640 root:root /etc/nginx/nginx.conf.2296.2026-07-26@02:15:08~
+640 root:root /etc/nginx/nginx.conf.2222.2026-07-26@02:15:07~
+640 root:root /etc/nginx/nginx.conf.5507.2026-07-27@11:22:08~
+640 root:root /etc/nginx/nginx.conf.2715.2026-07-26@02:19:36~
+640 root:root /etc/nginx/nginx.conf.2765.2026-07-26@02:19:37~
+640 root:root /etc/nginx/koi-win
+640 root:root /etc/nginx/sites-available/default
+640 root:root /etc/nginx/sites-available/enterprise-lab-site.conf
+640 root:root /etc/nginx/sites-available/cis-default-server.conf
+640 root:root /etc/nginx/koi-utf
+640 root:root /etc/nginx/fastcgi_params
+640 root:root /etc/nginx/scgi_params
+640 root:root /etc/nginx/proxy_params
+400 root:root /etc/nginx/ssl/web01.key
+640 root:root /etc/nginx/ssl/web01.crt
+640 root:root /etc/nginx/conf.d/10-cis-logging.conf
+640 root:root /etc/nginx/conf.d/20-cis-request-controls.conf
+640 root:root /etc/nginx/nginx.conf.2014.2026-07-27@11:11:16~
+640 root:root /etc/nginx/mime.types
+640 root:root /etc/nginx/snippets/cis-security-headers.conf
+640 root:root /etc/nginx/snippets/fastcgi-php.conf
+640 root:root /etc/nginx/snippets/snakeoil.conf
+640 root:root /etc/nginx/snippets/cis-deny-hidden.conf
+640 root:root /etc/nginx/win-utf
+640 root:root /etc/nginx/nginx.conf.2475.2026-07-26@02:18:17~
+640 root:root /etc/nginx/uwsgi_params
+640 root:root /etc/nginx/nginx.conf.1857.2026-07-26@01:57:19~
+640 root:root /etc/nginx/fastcgi.conf
+640 root:root /etc/nginx/nginx.conf
+===== ENABLED MODULES =====
+===== CERTIFICATE DETAILS =====
+subject=CN=web01.corp.example
+issuer=CN=web01.corp.example
+notBefore=Jul 27 15:54:18 2026 GMT
+notAfter=Jul 27 15:54:18 2027 GMT
+===== DEFAULT NGINX CONTENT =====
+/var/www/html/index.nginx-debian.html:4:<title>Welcome to nginx!</title>
+/var/www/html/index.nginx-debian.html:12:<h1>Welcome to nginx!</h1>
+/var/www/html/index.nginx-debian.html:13:<p>If you see this page, the nginx web server is successfully installed and
+/var/www/html/index.nginx-debian.html:17:<a href="http://nginx.org/">nginx.org</a>.<br/>
+/var/www/html/index.nginx-debian.html:19:<a href="http://nginx.com/">nginx.com</a>.</p>
+/var/www/html/index.nginx-debian.html:21:<p><em>Thank you for using nginx.</em></p>
+/usr/share/nginx/html/index.html:4:<title>Welcome to nginx!</title>
+/usr/share/nginx/html/index.html:12:<h1>Welcome to nginx!</h1>
+/usr/share/nginx/html/index.html:13:<p>If you see this page, the nginx web server is successfully installed and
+/usr/share/nginx/html/index.html:17:<a href="http://nginx.org/">nginx.org</a>.<br/>
+/usr/share/nginx/html/index.html:19:<a href="http://nginx.com/">nginx.com</a>.</p>
+/usr/share/nginx/html/index.html:21:<p><em>Thank you for using nginx.</em></p>
+===== CONFIGURATION VALIDATION =====
+active
+enablednginx: the configuration file /etc/nginx/nginx.conf syntax is ok
+nginx: configuration file /etc/nginx/nginx.conf test is successful

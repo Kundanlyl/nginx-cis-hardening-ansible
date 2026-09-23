@@ -1,0 +1,21 @@
+nginx | CHANGED | rc=0 >>
+===== HOST AND DATE =====
+web01
+2026-07-22T15:10:11-04:00
+===== NGINX VERSION =====
+/bin/sh: 1: nginx: not found
+===== NGINX SERVICE =====
+===== LISTENING PORTS =====
+Netid State  Recv-Q Send-Q    Local Address:Port Peer Address:PortProcess                                                  
+udp   UNCONN 0      0            127.0.0.54:53        0.0.0.0:*    users:(("systemd-resolve",pid=18988,fd=19))             
+udp   UNCONN 0      0         127.0.0.53%lo:53        0.0.0.0:*    users:(("systemd-resolve",pid=18988,fd=17))             
+udp   UNCONN 0      0      10.20.30.10%ens5:68        0.0.0.0:*    users:(("systemd-network",pid=19005,fd=36))             
+udp   UNCONN 0      0             127.0.0.1:323       0.0.0.0:*    users:(("chronyd",pid=695,fd=4))                        
+udp   UNCONN 0      0                 [::1]:323          [::]:*    users:(("chronyd",pid=695,fd=5))                        
+tcp   LISTEN 0      4096      127.0.0.53%lo:53        0.0.0.0:*    users:(("systemd-resolve",pid=18988,fd=18))             
+tcp   LISTEN 0      4096         127.0.0.54:53        0.0.0.0:*    users:(("systemd-resolve",pid=18988,fd=20))             
+tcp   LISTEN 0      4096            0.0.0.0:22        0.0.0.0:*    users:(("sshd",pid=19098,fd=3),("systemd",pid=1,fd=146))
+tcp   LISTEN 0      4096               [::]:22           [::]:*    users:(("sshd",pid=19098,fd=4),("systemd",pid=1,fd=147))
+===== NGINX PACKAGES =====
+===== UFW STATUS =====
+Status: inactiveUnit nginx.service could not be found.

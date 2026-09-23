@@ -1,0 +1,28 @@
+---
+nginx_cis_server_names:
+  - web01.corp.example
+  - web01
+  - 10.20.30.10
+
+# CIS Section 2
+nginx_cis_worker_user: www-data
+nginx_cis_pid_file: /run/nginx.pid
+nginx_cis_keepalive_timeout: 10s
+nginx_cis_send_timeout: 10s
+
+# CIS Section 4
+nginx_cis_primary_name: web01.corp.example
+nginx_cis_private_ip: 10.20.30.10
+nginx_cis_tls_certificate: /etc/nginx/ssl/web01.crt
+nginx_cis_tls_private_key: /etc/nginx/ssl/web01.key
+nginx_cis_tls_certificate_days: 365
+
+# CIS 4.1.8 requires at least one year.
+# Do not use preload for this temporary lab name.
+nginx_cis_hsts_max_age: 31536000
+
+# CIS Section 5
+nginx_cis_client_timeout: 15s
+nginx_cis_login_rate: 1r/s
+nginx_cis_login_burst: 5
+nginx_cis_client_max_body_size: 2m

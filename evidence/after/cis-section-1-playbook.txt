@@ -1,0 +1,15 @@
+
+PLAY [Apply CIS NGINX hardening] ***********************************************
+
+TASK [Gathering Facts] *********************************************************
+ok: [nginx]
+
+TASK [nginx_cis : CIS 1.2.2 | Ensure the latest software package is installed] ***
+ok: [nginx]
+
+TASK [nginx_cis : CIS 1.2.2 | Ensure NGINX is enabled and running] *************
+ok: [nginx]
+
+PLAY RECAP *********************************************************************
+nginx                      : ok=3    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+

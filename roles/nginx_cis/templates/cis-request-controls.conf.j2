@@ -1,0 +1,13 @@
+# Managed by Ansible
+
+# CIS 5.2.1
+client_header_timeout {{ nginx_cis_client_timeout }};
+client_body_timeout {{ nginx_cis_client_timeout }};
+
+# CIS 5.2.2
+client_max_body_size {{ nginx_cis_client_max_body_size }};
+
+# CIS 5.2.5
+limit_req_zone $binary_remote_addr
+    zone=cis_login_limit:10m
+    rate={{ nginx_cis_login_rate }};

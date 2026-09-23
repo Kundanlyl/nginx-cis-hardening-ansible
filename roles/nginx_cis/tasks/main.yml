@@ -1,0 +1,45 @@
+---
+- name: CIS Section 1 - Initial setup
+  ansible.builtin.import_tasks: section_1_installation.yml
+  tags:
+    - cis_section_1
+
+- name: CIS Section 2 - Basic configuration
+  ansible.builtin.import_tasks: section_2_configuration.yml
+  tags:
+    - cis_section_2
+
+- name: CIS Section 3 - Logging
+  ansible.builtin.import_tasks: section_3_logging.yml
+  tags:
+    - cis_section_3
+
+- name: CIS Section 4 - Encryption
+  ansible.builtin.import_tasks: section_4_tls.yml
+  tags:
+    - cis_section_4
+
+- name: CIS Section 5 - Request controls
+  ansible.builtin.import_tasks: section_5_request_controls.yml
+  tags:
+    - cis_section_5
+
+- name: Deploy cumulative CIS-hardened site
+  ansible.builtin.import_tasks: deploy_site.yml
+  tags:
+    - cis_site
+    - cis_section_2
+    - cis_section_4
+    - cis_section_5
+    - cis_2_4_1
+    - cis_4_1_1
+    - cis_4_1_3
+    - cis_4_1_4
+    - cis_4_1_5
+    - cis_4_1_8
+    - cis_4_1_11
+    - cis_5_1_2
+    - cis_5_2_5
+    - cis_5_3_1
+    - cis_5_3_2
+    - cis_5_3_3

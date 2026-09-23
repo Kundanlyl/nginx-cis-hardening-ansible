@@ -1,0 +1,89 @@
+---
+- name: Create pre-Section-5 NGINX backup
+  ansible.builtin.command:
+    cmd: tar -czf /root/nginx-pre-cis-section5.tar.gz /etc/nginx
+    creates: /root/nginx-pre-cis-section5.tar.gz
+  tags:
+    - cis_section_5
+
+- name: "CIS Section 5 | Confirm TLS certificate exists"
+  ansible.builtin.stat:
+    path: "{{ nginx_cis_tls_certificate }}"
+  register: nginx_cis_certificate_status
+  tags:
+    - cis_section_5
+
+- name: "CIS Section 5 | Confirm TLS private key exists"
+  ansible.builtin.stat:
+    path: "{{ nginx_cis_tls_private_key }}"
+  register: nginx_cis_key_status
+  tags:
+    - cis_section_5
+    - cis_5_2_1
+    - cis_5_2_5
+
+- name: "CIS Section 5 | Require Section 4 before Section 5"
+  ansible.builtin.assert:
+    that:
+      - nginx_cis_certificate_status.stat.exists
+      - nginx_cis_key_status.stat.exists
+    fail_msg: "Apply CIS Section 4 successfully before applying Section 5."
+  tags:
+    - cis_section_5
+
+- name: "CIS 5.2.1, 5.2.2 and 5.2.5 | Install global request controls"
+  ansible.builtin.template:
+    src: cis-request-controls.conf.j2
+    dest: /etc/nginx/conf.d/20-cis-request-controls.conf
+    owner: root
+    group: root
+    mode: "0640"
+  notify: Validate and reload NGINX
+  tags:
+    - cis_section_5
+    - cis_5_2_1
+    - cis_5_2_2
+    - cis_5_2_5
+
+- name: "CIS 5.2.3 | Check for a custom URI/header buffer override"
+  ansible.builtin.shell: >-
+    set -o pipefail &&
+    /usr/sbin/nginx -T 2>/dev/null |
+    /usr/bin/grep -E '^[[:space:]]*large_client_header_buffers'
+  args:
+    executable: /bin/bash
+  register: nginx_cis_header_buffer_override
+  changed_when: false
+  failed_when: nginx_cis_header_buffer_override.rc not in [0, 1]
+  check_mode: false
+  tags:
+    - cis_section_5
+    - cis_5_2_3
+
+- name: "CIS 5.2.3 | Report the compliant buffer state"
+  ansible.builtin.debug:
+    msg: >-
+      {{
+        nginx_cis_header_buffer_override.stdout
+        if nginx_cis_header_buffer_override.stdout | length > 0
+        else
+        'No override is configured; NGINX uses the CIS-compliant default of 4 8k.'
+      }}
+  tags:
+    - cis_section_5
+    - cis_5_2_3
+
+- name: "CIS 5.3.1-5.3.3 | Install browser security headers"
+  ansible.builtin.template:
+    src: cis-security-headers.conf.j2
+    dest: /etc/nginx/snippets/cis-security-headers.conf
+    owner: root
+    group: root
+    mode: "0640"
+  notify: Validate and reload NGINX
+  tags:
+    - cis_section_5
+    - cis_5_3_1
+    - cis_5_3_2
+    - cis_5_3_3
+

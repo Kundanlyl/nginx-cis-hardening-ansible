@@ -1,0 +1,24 @@
+
+PLAY [Apply CIS NGINX hardening] ***********************************************
+
+TASK [Gathering Facts] *********************************************************
+ok: [nginx]
+
+TASK [nginx_cis : Create pre-Section-3 NGINX backup] ***************************
+changed: [nginx]
+
+TASK [nginx_cis : CIS 3.2 | Configure detailed access logging] *****************
+changed: [nginx]
+
+TASK [nginx_cis : CIS 3.3 | Enable error logging at info level] ****************
+changed: [nginx]
+
+RUNNING HANDLER [nginx_cis : Validate NGINX configuration] *********************
+ok: [nginx]
+
+RUNNING HANDLER [nginx_cis : Reload NGINX] *************************************
+changed: [nginx]
+
+PLAY RECAP *********************************************************************
+nginx                      : ok=6    changed=4    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+

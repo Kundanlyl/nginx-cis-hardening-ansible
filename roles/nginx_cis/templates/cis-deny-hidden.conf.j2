@@ -1,0 +1,11 @@
+# Managed by Ansible — CIS 2.5.3
+
+location ^~ /.well-known/acme-challenge/ {
+    allow all;
+}
+
+location ~ /\.(?!well-known(?:/|$)) {
+    deny all;
+    access_log off;
+    log_not_found off;
+}

@@ -1,0 +1,39 @@
+
+PLAY [Apply CIS NGINX hardening] ***********************************************
+
+TASK [Gathering Facts] *********************************************************
+ok: [nginx]
+
+TASK [nginx_cis : Create pre-Section-5 NGINX backup] ***************************
+changed: [nginx]
+
+TASK [nginx_cis : CIS Section 5 | Confirm TLS certificate exists] **************
+ok: [nginx]
+
+TASK [nginx_cis : CIS Section 5 | Confirm TLS private key exists] **************
+ok: [nginx]
+
+TASK [nginx_cis : CIS Section 5 | Require Section 4 before Section 5] **********
+ok: [nginx] => {
+    "changed": false,
+    "msg": "All assertions passed"
+}
+
+TASK [nginx_cis : CIS 5.2.1 and 5.2.5 | Install global request controls] *******
+changed: [nginx]
+
+TASK [nginx_cis : CIS 5.3.1-5.3.3 | Install browser security headers] **********
+changed: [nginx]
+
+TASK [nginx_cis : CIS Section 5 | Deploy final cumulative project server] ******
+changed: [nginx]
+
+RUNNING HANDLER [nginx_cis : Validate NGINX configuration] *********************
+ok: [nginx]
+
+RUNNING HANDLER [nginx_cis : Reload NGINX] *************************************
+changed: [nginx]
+
+PLAY RECAP *********************************************************************
+nginx                      : ok=10   changed=5    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+

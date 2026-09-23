@@ -1,0 +1,75 @@
+
+PLAY [Apply CIS NGINX hardening] ***********************************************
+
+TASK [Gathering Facts] *********************************************************
+ok: [nginx]
+
+TASK [nginx_cis : Create pre-Section-2 NGINX backup] ***************************
+ok: [nginx]
+
+TASK [nginx_cis : CIS 2.2.1 | Ensure the NGINX service account cannot log in] ***
+ok: [nginx]
+
+TASK [nginx_cis : CIS 2.3.2 | Restrict the main NGINX directory] ***************
+ok: [nginx]
+
+TASK [nginx_cis : CIS 2.3.2 | Find NGINX configuration directories] ************
+ok: [nginx]
+
+TASK [nginx_cis : CIS 2.3.2 | Restrict NGINX configuration directories] ********
+ok: [nginx] => (item=/etc/nginx/sites-available)
+ok: [nginx] => (item=/etc/nginx/conf.d)
+ok: [nginx] => (item=/etc/nginx/modules-available)
+ok: [nginx] => (item=/etc/nginx/snippets)
+ok: [nginx] => (item=/etc/nginx/modules-enabled)
+ok: [nginx] => (item=/etc/nginx/sites-enabled)
+
+TASK [nginx_cis : CIS 2.3.2 | Find ordinary NGINX configuration files] *********
+ok: [nginx]
+
+TASK [nginx_cis : CIS 2.3.2 | Restrict ordinary NGINX configuration files] *****
+ok: [nginx] => (item=/etc/nginx/nginx.conf.2296.2026-07-26@02:15:08~)
+ok: [nginx] => (item=/etc/nginx/nginx.conf.2222.2026-07-26@02:15:07~)
+ok: [nginx] => (item=/etc/nginx/nginx.conf.2715.2026-07-26@02:19:36~)
+ok: [nginx] => (item=/etc/nginx/nginx.conf.2765.2026-07-26@02:19:37~)
+ok: [nginx] => (item=/etc/nginx/koi-win)
+ok: [nginx] => (item=/etc/nginx/koi-utf)
+ok: [nginx] => (item=/etc/nginx/fastcgi_params)
+ok: [nginx] => (item=/etc/nginx/scgi_params)
+ok: [nginx] => (item=/etc/nginx/proxy_params)
+ok: [nginx] => (item=/etc/nginx/nginx.conf.2014.2026-07-27@11:11:16~)
+ok: [nginx] => (item=/etc/nginx/mime.types)
+ok: [nginx] => (item=/etc/nginx/win-utf)
+ok: [nginx] => (item=/etc/nginx/nginx.conf.2475.2026-07-26@02:18:17~)
+ok: [nginx] => (item=/etc/nginx/uwsgi_params)
+ok: [nginx] => (item=/etc/nginx/nginx.conf.1857.2026-07-26@01:57:19~)
+ok: [nginx] => (item=/etc/nginx/fastcgi.conf)
+ok: [nginx] => (item=/etc/nginx/nginx.conf)
+ok: [nginx] => (item=/etc/nginx/sites-available/default)
+ok: [nginx] => (item=/etc/nginx/sites-available/enterprise-lab-site.conf)
+ok: [nginx] => (item=/etc/nginx/sites-available/cis-default-server.conf)
+ok: [nginx] => (item=/etc/nginx/snippets/fastcgi-php.conf)
+ok: [nginx] => (item=/etc/nginx/snippets/snakeoil.conf)
+ok: [nginx] => (item=/etc/nginx/snippets/cis-deny-hidden.conf)
+
+TASK [nginx_cis : CIS 2.5.3 | Install hidden-file protection] ******************
+ok: [nginx]
+
+TASK [nginx_cis : CIS 2.4.1 | Deploy the authorized project listener] **********
+ok: [nginx]
+
+TASK [nginx_cis : CIS 2.4.1 | Enable the authorized project listener] **********
+ok: [nginx]
+
+TASK [nginx_cis : CIS 2.4.1 | Remove the unused Ubuntu default site] ***********
+ok: [nginx]
+
+TASK [nginx_cis : CIS 2.4.2 | Deploy catch-all server for unknown hosts] *******
+ok: [nginx]
+
+TASK [nginx_cis : CIS 2.4.2 | Enable catch-all server] *************************
+ok: [nginx]
+
+PLAY RECAP *********************************************************************
+nginx                      : ok=14   changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+

@@ -1,0 +1,318 @@
+---
+- name: Create pre-Section-2 NGINX backup
+  ansible.builtin.command:
+    cmd: tar -czf /root/nginx-pre-cis-section2.tar.gz /etc/nginx
+    creates: /root/nginx-pre-cis-section2.tar.gz
+  tags:
+    - cis_section_2
+
+# CIS 2.1.1 - audit modules
+
+- name: "CIS 2.1.1 | Read the complete active NGINX configuration"
+  ansible.builtin.command: /usr/sbin/nginx -T
+  register: nginx_cis_complete_configuration
+  changed_when: false
+  check_mode: false
+  tags:
+    - cis_section_2
+    - cis_2_1_1
+
+- name: "CIS 2.1.1 | Require no unapproved dynamic modules"
+  ansible.builtin.assert:
+    that:
+      - >-
+        (
+          nginx_cis_complete_configuration.stdout
+          | regex_findall('(?m)^\\s*load_module\\s+[^;]+;')
+          | length
+        ) == 0
+    fail_msg: >-
+      One or more dynamic modules are loaded. Review each load_module directive
+      manually and remove only modules that the project does not require.
+    success_msg: "No dynamic NGINX modules are loaded."
+  tags:
+    - cis_section_2
+    - cis_2_1_1
+
+# CIS 2.2.1, 2.2.2, 2.2.3
+
+- name: "CIS 2.2.1 | Configure the dedicated non-privileged worker account"
+  ansible.builtin.lineinfile:
+    path: /etc/nginx/nginx.conf
+    regexp: '^\s*user\s+'
+    line: "user {{ nginx_cis_worker_user }};"
+    insertbefore: '^\s*worker_processes\s+'
+    backup: true
+  notify: Validate and reload NGINX
+  tags:
+    - cis_section_2
+    - cis_2_2_1
+
+- name: "CIS 2.2.2 and 2.2.3 | Lock the worker account and deny shell access"
+  ansible.builtin.user:
+    name: "{{ nginx_cis_worker_user }}"
+    state: present
+    password_lock: true
+    shell: /usr/sbin/nologin
+  tags:
+    - cis_section_2
+    - cis_2_2_2
+    - cis_2_2_3
+
+- name: "CIS 2.2.1 | Read worker-account UID"
+  ansible.builtin.command:
+    argv:
+      - /usr/bin/id
+      - -u
+      - "{{ nginx_cis_worker_user }}"
+  register: nginx_cis_worker_uid
+  changed_when: false
+  check_mode: false
+  tags:
+    - cis_section_2
+    - cis_2_2_1
+
+- name: "CIS 2.2.1 | Read worker-account groups"
+  ansible.builtin.command:
+    argv:
+      - /usr/bin/id
+      - -nG
+      - "{{ nginx_cis_worker_user }}"
+  register: nginx_cis_worker_groups
+  changed_when: false
+  check_mode: false
+  tags:
+    - cis_section_2
+    - cis_2_2_1
+
+- name: "CIS 2.2.1 | Verify the worker account is unprivileged"
+  ansible.builtin.assert:
+    that:
+      - nginx_cis_worker_uid.stdout | int != 0
+      - >-
+        (
+          nginx_cis_worker_groups.stdout.split()
+          | intersect(['root', 'sudo', 'wheel'])
+          | length
+        ) == 0
+    fail_msg: "The NGINX worker account has privileged UID or group membership."
+  tags:
+    - cis_section_2
+    - cis_2_2_1
+
+# CIS 2.3.2
+
+- name: "CIS 2.3.2 | Restrict the main NGINX directory"
+  ansible.builtin.file:
+    path: /etc/nginx
+    owner: root
+    group: root
+    mode: "0750"
+  tags:
+    - cis_section_2
+    - cis_2_3_1
+    - cis_2_3_2
+
+- name: "CIS 2.3.2 | Find NGINX configuration directories"
+  ansible.builtin.find:
+    paths: /etc/nginx
+    file_type: directory
+    recurse: true
+  register: nginx_cis_directories
+  tags:
+    - cis_section_2
+    - cis_2_3_2
+
+- name: "CIS 2.3.2 | Restrict NGINX configuration directories"
+  ansible.builtin.file:
+    path: "{{ item.path }}"
+    owner: root
+    group: root
+    mode: "0750"
+  loop: "{{ nginx_cis_directories.files }}"
+  loop_control:
+    label: "{{ item.path }}"
+  tags:
+    - cis_section_2
+    - cis_2_3_1
+    - cis_2_3_2
+
+- name: "CIS 2.3.2 | Find ordinary NGINX configuration files"
+  ansible.builtin.find:
+    paths: /etc/nginx
+    file_type: file
+    recurse: true
+    patterns:
+      - "*"
+    excludes:
+      - "*.key"
+      - "*.pem"
+  register: nginx_cis_configuration_files
+  tags:
+    - cis_section_2
+    - cis_2_3_2
+
+- name: "CIS 2.3.2 | Restrict ordinary NGINX configuration files"
+  ansible.builtin.file:
+    path: "{{ item.path }}"
+    owner: root
+    group: root
+    mode: "0640"
+  loop: "{{ nginx_cis_configuration_files.files }}"
+  loop_control:
+    label: "{{ item.path }}"
+  notify: Validate and reload NGINX
+  tags:
+    - cis_section_2
+    - cis_2_3_1
+    - cis_2_3_2
+    - cis_2_3_2
+
+# CIS 2.3.3
+
+- name: "CIS 2.3.3 | Secure the NGINX PID file"
+  ansible.builtin.file:
+    path: "{{ nginx_cis_pid_file }}"
+    state: file
+    owner: root
+    group: root
+    mode: "0644"
+  tags:
+    - cis_section_2
+    - cis_2_3_3
+
+# CIS 2.5.1 - Implemented manually on the NGINX node.
+
+
+# CIS 2.5.2
+
+- name: "CIS 2.5.2 | Remove default NGINX welcome pages"
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: absent
+  loop:
+    - /var/www/html/index.nginx-debian.html
+    - /usr/share/nginx/html/index.html
+  tags:
+    - cis_section_2
+    - cis_2_5_2
+
+- name: "CIS 2.5.2 | Create custom error-page directory"
+  ansible.builtin.file:
+    path: /var/www/html/errors
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+  tags:
+    - cis_section_2
+    - cis_2_5_2
+
+- name: "CIS 2.5.2 | Install generic custom error pages"
+  ansible.builtin.copy:
+    dest: "{{ item.path }}"
+    owner: root
+    group: root
+    mode: "0644"
+    content: "{{ item.content }}"
+  loop:
+    - path: /var/www/html/errors/404.html
+      content: |
+        <!doctype html>
+        <html lang="en">
+        <head><meta charset="utf-8"><title>Page not found</title></head>
+        <body><h1>Page not found</h1><p>The requested resource does not exist.</p></body>
+        </html>
+    - path: /var/www/html/errors/50x.html
+      content: |
+        <!doctype html>
+        <html lang="en">
+        <head><meta charset="utf-8"><title>Service unavailable</title></head>
+        <body><h1>Service unavailable</h1><p>Please try again later.</p></body>
+        </html>
+  loop_control:
+    label: "{{ item.path }}"
+  tags:
+    - cis_section_2
+    - cis_2_5_2
+
+- name: "CIS 2.5.2 | Configure custom error responses globally"
+  ansible.builtin.copy:
+    dest: /etc/nginx/conf.d/15-cis-custom-errors.conf
+    owner: root
+    group: root
+    mode: "0640"
+    content: |
+      # Managed by Ansible — CIS 2.5.2
+      error_page 404 /errors/404.html;
+      error_page 500 502 503 504 /errors/50x.html;
+  notify: Validate and reload NGINX
+  tags:
+    - cis_section_2
+    - cis_2_5_2
+
+# CIS 2.5.3
+
+- name: "CIS 2.5.3 | Install hidden-file protection"
+  ansible.builtin.template:
+    src: cis-deny-hidden.conf.j2
+    dest: /etc/nginx/snippets/cis-deny-hidden.conf
+    owner: root
+    group: root
+    mode: "0640"
+  notify: Validate and reload NGINX
+  tags:
+    - cis_section_2
+    - cis_2_5_3
+
+
+# CIS 2.4.1
+
+- name: "CIS 2.4.1 | Remove the unused Ubuntu default site"
+  ansible.builtin.file:
+    path: /etc/nginx/sites-enabled/default
+    state: absent
+  notify: Validate and reload NGINX
+  tags:
+    - cis_section_2
+    - cis_2_4_1
+
+
+# CIS 2.4.2
+
+- name: "CIS 2.4.2 | Deploy catch-all server for unknown hosts"
+  ansible.builtin.template:
+    src: cis-default-server.conf.j2
+    dest: /etc/nginx/sites-available/cis-default-server.conf
+    owner: root
+    group: root
+    mode: "0640"
+  notify: Validate and reload NGINX
+  tags:
+    - cis_section_2
+    - cis_2_4_2
+
+- name: "CIS 2.4.2 | Enable catch-all server"
+  ansible.builtin.file:
+    src: /etc/nginx/sites-available/cis-default-server.conf
+    dest: /etc/nginx/sites-enabled/cis-default-server.conf
+    state: link
+  notify: Validate and reload NGINX
+  tags:
+    - cis_section_2
+    - cis_2_4_2
+
+# CIS 2.4.3 & 2.4.4 
+
+- name: "CIS 2.4.3 and 2.4.4 | Configure connection timeouts"
+  ansible.builtin.template:
+    src: cis-connection-timeouts.conf.j2
+    dest: /etc/nginx/conf.d/20-cis-connection-timeouts.conf
+    owner: root
+    group: root
+    mode: "0640"
+  notify: Validate and reload NGINX
+  tags:
+    - cis_section_2
+    - cis_2_4_3
+    - cis_2_4_4

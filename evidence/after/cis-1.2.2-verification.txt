@@ -1,0 +1,23 @@
+nginx | CHANGED | rc=0 >>
+===== CIS 1.2.2 VERIFICATION =====
+--- Package policy ---
+nginx:
+  Installed: 1.28.3-2ubuntu1.8
+  Candidate: 1.28.3-2ubuntu1.8
+  Version table:
+ *** 1.28.3-2ubuntu1.8 500
+        500 http://ca-central-1.ec2.archive.ubuntu.com/ubuntu resolute-updates/main amd64v3 Packages
+        500 http://security.ubuntu.com/ubuntu resolute-security/main amd64v3 Packages
+        100 /var/lib/dpkg/status
+     1.28.3-2ubuntu1 500
+        500 http://ca-central-1.ec2.archive.ubuntu.com/ubuntu resolute/main amd64v3 Packages
+--- Pending NGINX updates ---
+No NGINX package update pending
+--- Installed version ---
+nginx version: nginx/1.28.3 (Ubuntu)
+--- Configuration test ---
+nginx: the configuration file /etc/nginx/nginx.conf syntax is ok
+nginx: configuration file /etc/nginx/nginx.conf test is successful
+--- Service state ---
+active
+enabled

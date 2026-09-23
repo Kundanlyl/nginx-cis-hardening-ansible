@@ -1,0 +1,42 @@
+
+PLAY [Apply CIS NGINX hardening] ***********************************************
+
+TASK [Gathering Facts] *********************************************************
+ok: [nginx]
+
+TASK [nginx_cis : Create pre-Section-4 NGINX backup] ***************************
+changed: [nginx]
+
+TASK [nginx_cis : CIS Section 4 | Ensure OpenSSL is installed] *****************
+ok: [nginx]
+
+TASK [nginx_cis : CIS 4.1.3 | Create protected TLS directory] ******************
+changed: [nginx]
+
+TASK [nginx_cis : CIS 4.1.3 | Check TLS private key] ***************************
+ok: [nginx]
+
+TASK [nginx_cis : CIS 4.1.3 | Check TLS certificate] ***************************
+ok: [nginx]
+
+TASK [nginx_cis : CIS Section 4 | Generate lab TLS certificate and private key] ***
+changed: [nginx]
+
+TASK [nginx_cis : CIS 4.1.3 | Restrict TLS private-key permissions] ************
+changed: [nginx]
+
+TASK [nginx_cis : CIS Section 4 | Protect TLS certificate] *********************
+changed: [nginx]
+
+TASK [nginx_cis : CIS 4.1.1-4.1.8 | Deploy HTTPS project server] ***************
+changed: [nginx]
+
+RUNNING HANDLER [nginx_cis : Validate NGINX configuration] *********************
+ok: [nginx]
+
+RUNNING HANDLER [nginx_cis : Reload NGINX] *************************************
+changed: [nginx]
+
+PLAY RECAP *********************************************************************
+nginx                      : ok=12   changed=7    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+

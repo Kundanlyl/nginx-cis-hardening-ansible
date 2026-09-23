@@ -1,0 +1,74 @@
+---
+
+# CIS 1.1.1 - audit task
+
+- name: "CIS 1.1.1 | Read the installed NGINX version"
+  ansible.builtin.command: /usr/sbin/nginx -v
+  register: nginx_cis_version_command
+  changed_when: false
+  check_mode: false
+  tags:
+    - cis_section_1
+    - cis_1_1_1
+
+- name: "CIS 1.1.1 | Extract the installed NGINX version"
+  ansible.builtin.set_fact:
+    nginx_cis_installed_version: >-
+      {{
+        nginx_cis_version_command.stderr
+        | regex_replace('^.*nginx/', '')
+        | trim
+      }}
+  tags:
+    - cis_section_1
+    - cis_1_1_1
+
+- name: "CIS 1.1.1 | Require NGINX 1.28.0 or later"
+  ansible.builtin.assert:
+    that:
+      - nginx_cis_installed_version is version('1.28.0', '>=')
+    fail_msg: >-
+      CIS NGINX v3.0.0 requires NGINX 1.28.0 or later; installed version is
+      {{ nginx_cis_installed_version }}.
+  tags:
+    - cis_section_1
+    - cis_1_1_1
+
+# CIS 1.2.1 - audit task
+
+- name: "CIS 1.2.1 | Record the configured NGINX package repository"
+  ansible.builtin.command: /usr/bin/apt-cache policy nginx
+  register: nginx_cis_apt_policy
+  changed_when: false
+  check_mode: false
+  tags:
+    - cis_section_1
+    - cis_1_2_1
+
+- name: "CIS 1.2.1 | Display package source for manual trust review"
+  ansible.builtin.debug:
+    var: nginx_cis_apt_policy.stdout_lines
+  tags:
+    - cis_section_1
+    - cis_1_2_1
+
+# CIS 1.2.2
+- name: "CIS 1.2.2 | Ensure the latest software package is installed"
+  ansible.builtin.apt:
+    name: nginx
+    state: latest
+    update_cache: true
+    cache_valid_time: 3600
+  notify: Validate and reload NGINX
+  tags:
+    - cis_section_1
+    - cis_1_2_2
+
+- name: "CIS 1.2.2 | Ensure NGINX is enabled and running"
+  ansible.builtin.service:
+    name: nginx
+    enabled: true
+    state: started
+  tags:
+    - cis_section_1
+    - cis_1_2_2

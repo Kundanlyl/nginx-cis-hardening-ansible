@@ -1,0 +1,35 @@
+---
+- name: "CIS cumulative site | Check TLS certificate"
+  ansible.builtin.stat:
+    path: "{{ nginx_cis_tls_certificate }}"
+  register: nginx_cis_deploy_certificate
+
+- name: "CIS cumulative site | Check TLS private key"
+  ansible.builtin.stat:
+    path: "{{ nginx_cis_tls_private_key }}"
+  register: nginx_cis_deploy_private_key
+
+- name: "CIS cumulative site | Require TLS material"
+  ansible.builtin.assert:
+    that:
+      - nginx_cis_deploy_certificate.stat.exists
+      - nginx_cis_deploy_private_key.stat.exists
+    fail_msg: >-
+      Apply CIS Section 4 once before deploying the cumulative HTTPS site.
+
+- name: "CIS cumulative site | Deploy final hardened virtual host"
+  ansible.builtin.template:
+    src: hardened-site.conf.j2
+    dest: /etc/nginx/sites-available/enterprise-lab-site.conf
+    owner: root
+    group: root
+    mode: "0640"
+  notify: Validate and reload NGINX
+
+- name: "CIS cumulative site | Enable final hardened virtual host"
+  ansible.builtin.file:
+    src: /etc/nginx/sites-available/enterprise-lab-site.conf
+    dest: /etc/nginx/sites-enabled/enterprise-lab-site.conf
+    state: link
+    force: true
+  notify: Validate and reload NGINX
